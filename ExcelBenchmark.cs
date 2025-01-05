@@ -5,13 +5,15 @@ using ExcelBattle.Sut;
 namespace ExcelBattle;
 
 [MemoryDiagnoser]
+[ThreadingDiagnoser]
 public class ExcelBenchmark
 {
     private const string TemplateDir = "D:\\tmp\\";
     private static string GenerateOutputFileName() => $"{TemplateDir}\\{Guid.NewGuid()}.xlsx";
     private TemplateData _data = default!;
 
-    [Params(10, 1000, 100000)] public int TotalRow { get; set; }
+    [Params(10, 1000, 100000)]
+    public int TotalRow { get; set; }
 
     [GlobalSetup]
     public void GlobalSetup()
@@ -37,7 +39,7 @@ public class ExcelBenchmark
         }
     }
 
-    [Benchmark]
+    [Benchmark(Baseline = true)]
     public void UseNpoi()
     {
         var fileName = GenerateOutputFileName();
@@ -45,7 +47,7 @@ public class ExcelBenchmark
     }
 
     [Benchmark]
-    public void UseCloseXML()
+    public void UseCloseXml()
     {
         var fileName = GenerateOutputFileName();
         CloseXmlExcelWriter.Write(_data, fileName);
@@ -74,9 +76,9 @@ public class ExcelBenchmark
 
         sample.GlobalSetup();
 
-        //NpoiExcelWriter.Write(sample._data, $"{TemplateDir}\\ExportWithNpoi.xlsx");
-        //CloseXmlExcelWriter.Write(sample._data, $"{TemplateDir}\\ExportWithCloseXML.xlsx");
-        //MiniExcelWriter.Write(sample._data, $"{TemplateDir}\\ExportWithMiniExcel.xlsx");
-        OpenXmlSdkWriter.Write(sample._data, $"{TemplateDir}\\ExportWithMiniExcel.xlsx");
+        NpoiExcelWriter.Write(sample._data, $"{TemplateDir}\\ExportWithNpoi.xlsx");
+        CloseXmlExcelWriter.Write(sample._data, $"{TemplateDir}\\ExportWithCloseXML.xlsx");
+        MiniExcelWriter.Write(sample._data, $"{TemplateDir}\\ExportWithMiniExcel.xlsx");
+        OpenXmlSdkWriter.Write(sample._data, $"{TemplateDir}\\ExportWithOpenXmlSdk.xlsx");
     }
 }
